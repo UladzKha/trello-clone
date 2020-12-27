@@ -1,15 +1,16 @@
 import React from "react";
 import { AppContainer } from "./styles";
-import Card from "./components/Card";
 import Column from "./components/Column";
 import AddNewItem from "./components/AddNewItem";
 import { useAppState } from "./context/AppStateContext";
+import CustomDragLayer from "./utils/CustomDragLayer";
 
 const App = () => {
   const { state, dispatch } = useAppState();
 
   return (
     <AppContainer>
+      <CustomDragLayer />
       {state.lists.map((list, i) => (
         <Column text={list.text} key={list.id} index={i} id={list.id} />
       ))}

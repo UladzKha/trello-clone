@@ -1,19 +1,21 @@
-import { ColumnContainer, ColumnTitle } from "../styles";
-import AddNewItem from "./AddNewItem";
-import { useAppState } from "../context/AppStateContext";
-import Card from "./Card";
 import { useRef } from "react";
-import { useItemDrag } from "../utils/useItemDrag";
 import { useDrop } from "react-dnd";
+import { useAppState } from "../context/AppStateContext";
+import AddNewItem from "./AddNewItem";
+import { useItemDrag } from "../utils/useItemDrag";
 import { DragItem } from "../utils/DragItem";
+import { isHidden } from "../utils/isHidden";
+import Card from "./Card";
+import { ColumnContainer, ColumnTitle } from "../styles";
 
 interface ColumnProps {
   text: string;
   index: number;
   id: string;
+  isPreview?: boolean;
 }
 
-const Column = ({ text, index, id }: ColumnProps) => {
+const Column = ({ text, index, id, isPreview }: ColumnProps) => {
   const { state, dispatch } = useAppState();
   const ref = useRef<HTMLDivElement>(null);
   const { drag } = useItemDrag({ type: "COLUMN", id, index, text });
@@ -31,12 +33,16 @@ const Column = ({ text, index, id }: ColumnProps) => {
       dispatch({ type: "MOVE_LIST", payload: { dragIndex, hoverIndex } });
 
       item.index = hoverIndex;
-      drag(drop(ref));
     },
   });
+  drag(drop(ref));
 
   return (
-    <ColumnContainer>
+    <ColumnContainer
+      isPreview={isPreview}
+      ref={ref}
+      isHidden={isHidden(isPreview, state.draggedItem, "COLUMN", id)}
+    >
       <ColumnTitle>{text}</ColumnTitle>
       {state.lists[index].tasks.map((task) => (
         <Card text={task.text} key={task.id} />
